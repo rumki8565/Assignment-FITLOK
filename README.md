@@ -25,36 +25,3 @@ FitLog is a dark, no-nonsense gym companion. Browse a library of lifts, open any
 6. **Mark as Done and Remove** — finish a lift or remove it from either list, with a toast for each action.
 7. **Saved between visits** — your plan and saved lists are kept in `localStorage`, so they survive a page reload.
 8. **Loading and error states** — a loading animation while data is fetched, and a custom 404 page for unknown routes.
-
-## Getting Started
-
-```bash
-git clone https://github.com/rumki8565/Assignment-FITLOK.git
-cd Assignment-FITLOK
-npm install
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-To create a production build:
-
-```bash
-npm run build
-npm start
-```
-
-## API
-
-- All workouts: `https://api.abcz.workers.dev/api/fitlog`
-- Single workout: `https://api.abcz.workers.dev/api/fitlog/:id`
-
-## Project Structure
-
-```
-src/
-├── app/            # Routes: home, /workouts/[id], /my-plan, 404, loading
-├── components/     # Navbar, Footer, Hero, WorkoutCard, WorkoutActions, MyPlanView
-├── lib/            # API helper and the plan/saved store
-└── types/          # TypeScript types
-```

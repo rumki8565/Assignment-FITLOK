@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Dumbbell } from "lucide-react";
+import Image from "next/image";
 import { usePlanState } from "@/lib/plan-store";
 
 type NavLink = { href: string; label: string };
@@ -24,7 +24,13 @@ export default function Navbar() {
       <nav className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-4 sm:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-self-start">
-          <Dumbbell className="h-5 w-5 text-accent" />
+          <Image
+            src="/logo.png"
+            alt="FitLog"
+            width={20}
+            height={20}
+            className="h-5 w-5 object-contain"
+          />
           <span className="hidden font-display text-lg font-bold uppercase tracking-wide sm:inline">
             FitLog
           </span>
