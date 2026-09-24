@@ -9,3 +9,13 @@ export async function getWorkouts(): Promise<Workout[]> {
   }
   return res.json();
 }
+
+export async function getWorkout(id: string): Promise<Workout | null> {
+  const res = await fetch(`${BASE_URL}/${id}`, { cache: "no-store" });
+  if (!res.ok) return null;
+
+  const data: Workout | Workout[] = await res.json();
+  const workout = Array.isArray(data) ? data[0] : data;
+
+  return workout && typeof workout.name === "string" ? workout : null;
+}
