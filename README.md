@@ -4,7 +4,7 @@ FitLog is a dark, no-nonsense gym companion. Browse a library of lifts, open any
 
 **Live site:** `<add your live link here>`
 
-**Repository:** `<add your GitHub repository link here>`
+**Repository:** https://github.com/rumki8565/Assignment-FITLOK
 
 ## Technologies Used
 
@@ -29,8 +29,8 @@ FitLog is a dark, no-nonsense gym companion. Browse a library of lifts, open any
 ## Getting Started
 
 ```bash
-git clone <your-repository-url>
-cd fitlog
+git clone https://github.com/rumki8565/Assignment-FITLOK.git
+cd Assignment-FITLOK
 npm install
 npm run dev
 ```
