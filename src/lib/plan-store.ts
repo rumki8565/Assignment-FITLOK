@@ -81,3 +81,15 @@ export function saveForLater(id: number): SaveResult {
 export function usePlanState(): PlanState {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
+
+function subscribeNoop(): () => void {
+  return () => {};
+}
+
+export function useHasHydrated(): boolean {
+  return useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
+}
