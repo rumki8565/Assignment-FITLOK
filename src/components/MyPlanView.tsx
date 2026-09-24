@@ -3,24 +3,52 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Clock, Flame, Star } from "lucide-react";
-import { useHasHydrated, usePlanState } from "@/lib/plan-store";
+import { Check, ChevronDown, Clock, Flame, Star, X } from "lucide-react";
+import { toast } from "sonner";
+import {
+  markDone,
+  removeFromPlan,
+  removeFromSaved,
+  useHasHydrated,
+  usePlanState,
+} from "@/lib/plan-store";
 import type { Workout } from "@/types/workout";
 
 type Tab = "plan" | "saved";
+type SortKey = "duration" | "caloriesBurned" | "rating";
 
 type MyPlanViewProps = { workouts: Workout[] };
-type PlanCardProps = { workout: Workout };
+type PlanCardProps = {
+  workout: Workout;
+  tab: Tab;
+  isDone: boolean;
+  onDone: (workout: Workout) => void;
+  onRemove: (workout: Workout) => void;
+};
 
 const tabs: { key: Tab; label: string }[] = [
   { key: "plan", label: "Today's Plan" },
   { key: "saved", label: "Saved" },
 ];
 
+const sortOptions: { key: SortKey; label: string }[] = [
+  { key: "duration", label: "Duration" },
+  { key: "caloriesBurned", label: "Calories" },
+  { key: "rating", label: "Rating" },
+];
+
+function isSortKey(value: string): value is SortKey {
+  return sortOptions.some((option) => option.key === value);
+}
+
 function pickWorkouts(ids: number[], workouts: Workout[]): Workout[] {
   return ids
     .map((id) => workouts.find((workout) => workout.id === id))
     .filter((workout): workout is Workout => workout !== undefined);
+}
+
+function sortWorkouts(list: Workout[], key: SortKey): Workout[] {
+  return [...list].sort((a, b) => b[key] - a[key]);
 }
 
 function EmptyState() {
@@ -42,9 +70,13 @@ function EmptyState() {
   );
 }
 
-function PlanCard({ workout }: PlanCardProps) {
+function PlanCard({ workout, tab, isDone, onDone, onRemove }: PlanCardProps) {
   return (
-    <div className="flex flex-wrap items-center gap-4 rounded-xl border border-line bg-card p-3 sm:flex-nowrap">
+    <div
+      className={`flex flex-wrap items-center gap-4 rounded-xl border border-line bg-card p-3 sm:flex-nowrap ${
+        isDone ? "opacity-70" : ""
+      }`}
+    >
       <div className="relative h-14 w-24 shrink-0 overflow-hidden rounded-md">
         <Image
           src={workout.image}
@@ -83,6 +115,27 @@ function PlanCard({ workout }: PlanCardProps) {
         >
           View Details
         </Link>
+
+        {tab === "plan" && (
+          <button
+            type="button"
+            onClick={() => onDone(workout)}
+            disabled={isDone}
+            className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-xs font-bold text-black transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Check className="h-3.5 w-3.5" />
+            {isDone ? "Done" : "Mark as Done"}
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={() => onRemove(workout)}
+          aria-label={`Remove ${workout.name}`}
+          className="rounded-full p-1.5 text-muted transition hover:text-white"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
@@ -90,12 +143,16 @@ function PlanCard({ workout }: PlanCardProps) {
 
 export default function MyPlanView({ workouts }: MyPlanViewProps) {
   const [tab, setTab] = useState<Tab>("plan");
+  const [sortKey, setSortKey] = useState<SortKey>("duration");
   const hydrated = useHasHydrated();
-  const { plan, saved } = usePlanState();
+  const { plan, saved, done } = usePlanState();
 
   const planWorkouts = pickWorkouts(plan, workouts);
   const savedWorkouts = pickWorkouts(saved, workouts);
-  const visible = tab === "plan" ? planWorkouts : savedWorkouts;
+  const visible = sortWorkouts(
+    tab === "plan" ? planWorkouts : savedWorkouts,
+    sortKey,
+  );
 
   const totalMinutes = planWorkouts.reduce(
     (sum, workout) => sum + workout.duration,
@@ -111,6 +168,23 @@ export default function MyPlanView({ workouts }: MyPlanViewProps) {
     { label: "Minutes", value: totalMinutes, highlight: false },
     { label: "Calories", value: totalCalories, highlight: false },
   ];
+
+  function handleDone(workout: Workout): void {
+    markDone(workout.id);
+    toast.success("Marked as done", { description: workout.name });
+  }
+
+  function handleRemove(workout: Workout): void {
+    if (tab === "plan") {
+      removeFromPlan(workout.id);
+      toast.success("Removed from today's plan", {
+        description: workout.name,
+      });
+    } else {
+      removeFromSaved(workout.id);
+      toast.success("Removed from saved", { description: workout.name });
+    }
+  }
 
   return (
     <>
@@ -146,6 +220,31 @@ export default function MyPlanView({ workouts }: MyPlanViewProps) {
             </button>
           ))}
         </div>
+
+        <label className="flex items-center gap-2 text-xs text-muted">
+          Sort By
+          <span className="relative">
+            <select
+              value={sortKey}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (isSortKey(value)) setSortKey(value);
+              }}
+              className="appearance-none rounded-md border border-line bg-card py-1.5 pl-3 pr-8 text-xs text-white outline-none focus:border-white/40"
+            >
+              {sortOptions.map((option) => (
+                <option
+                  key={option.key}
+                  value={option.key}
+                  className="bg-card text-white"
+                >
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
+          </span>
+        </label>
       </div>
 
       <div className="mt-4">
@@ -159,7 +258,13 @@ export default function MyPlanView({ workouts }: MyPlanViewProps) {
           <ul className="space-y-3">
             {visible.map((workout) => (
               <li key={workout.id}>
-                <PlanCard workout={workout} />
+                <PlanCard
+                  workout={workout}
+                  tab={tab}
+                  isDone={done.includes(workout.id)}
+                  onDone={handleDone}
+                  onRemove={handleRemove}
+                />
               </li>
             ))}
           </ul>

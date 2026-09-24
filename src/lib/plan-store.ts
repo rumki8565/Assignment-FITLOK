@@ -4,11 +4,11 @@ export const PLAN_LIMIT = 5;
 
 const STORAGE_KEY = "fitlog-state";
 
-type PlanState = { plan: number[]; saved: number[] };
+type PlanState = { plan: number[]; saved: number[]; done: number[] };
 export type AddResult = "added" | "duplicate" | "full";
 export type SaveResult = "added" | "duplicate";
 
-const EMPTY_STATE: PlanState = { plan: [], saved: [] };
+const EMPTY_STATE: PlanState = { plan: [], saved: [], done: [] };
 
 let state: PlanState = EMPTY_STATE;
 let hasLoaded = false;
@@ -24,10 +24,12 @@ function readStorage(): PlanState {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return EMPTY_STATE;
-    const parsed: { plan?: unknown; saved?: unknown } = JSON.parse(raw);
+    const parsed: { plan?: unknown; saved?: unknown; done?: unknown } =
+      JSON.parse(raw);
     return {
       plan: isNumberArray(parsed.plan) ? parsed.plan : [],
       saved: isNumberArray(parsed.saved) ? parsed.saved : [],
+      done: isNumberArray(parsed.done) ? parsed.done : [],
     };
   } catch {
     return EMPTY_STATE;
@@ -76,6 +78,29 @@ export function saveForLater(id: number): SaveResult {
   if (current.saved.includes(id)) return "duplicate";
   update({ ...current, saved: [...current.saved, id] });
   return "added";
+}
+
+export function removeFromPlan(id: number): void {
+  const current = getSnapshot();
+  update({
+    ...current,
+    plan: current.plan.filter((item) => item !== id),
+    done: current.done.filter((item) => item !== id),
+  });
+}
+
+export function removeFromSaved(id: number): void {
+  const current = getSnapshot();
+  update({
+    ...current,
+    saved: current.saved.filter((item) => item !== id),
+  });
+}
+
+export function markDone(id: number): void {
+  const current = getSnapshot();
+  if (!current.plan.includes(id) || current.done.includes(id)) return;
+  update({ ...current, done: [...current.done, id] });
 }
 
 export function usePlanState(): PlanState {
