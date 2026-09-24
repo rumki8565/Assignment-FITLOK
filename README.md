@@ -2,7 +2,7 @@
 
 FitLog is a dark, no-nonsense gym companion. Browse a library of lifts, open any workout for full details, lock it into today's plan or save it for later, and watch your totals for exercises, minutes and calories add up.
 
-**Live site:** `<add your live link here>`
+**Live site:** https://fitlog-two-neon.vercel.app
 
 **Repository:** https://github.com/rumki8565/Assignment-FITLOK
 
