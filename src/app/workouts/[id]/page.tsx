@@ -24,8 +24,8 @@ export default async function WorkoutDetailsPage({ params }: DetailsPageProps) {
   ];
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
-      <div className="grid gap-8 md:grid-cols-2 md:gap-12">
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-10">
+      <div className="grid gap-8 md:grid-cols-[2fr_3fr] md:items-start md:gap-12">
         {/* Left: image */}
         <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-line">
           <Image
@@ -39,7 +39,7 @@ export default async function WorkoutDetailsPage({ params }: DetailsPageProps) {
 
         {/* Right: details */}
         <div>
-          <h1 className="font-display text-4xl font-bold uppercase leading-tight sm:text-5xl">
+          <h1 className="font-display text-3xl font-bold uppercase leading-tight sm:text-4xl">
             {workout.name}
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
