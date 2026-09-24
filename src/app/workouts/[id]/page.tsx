@@ -27,7 +27,7 @@ export default async function WorkoutDetailsPage({ params }: DetailsPageProps) {
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-10">
       <div className="grid gap-8 md:grid-cols-[2fr_3fr] md:items-start md:gap-12">
         {/* Left: image */}
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-line">
+        <div className="relative aspect-4/5 w-full overflow-hidden rounded-2xl border border-line">
           <Image
             src={workout.image}
             alt={workout.name}
