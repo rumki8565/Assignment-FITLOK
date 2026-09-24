@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Dumbbell } from "lucide-react";
+import { usePlanState } from "@/lib/plan-store";
 
 type NavLink = { href: string; label: string };
 
@@ -14,9 +15,9 @@ const links: NavLink[] = [
 export default function Navbar() {
   const pathname = usePathname();
 
-  // Temporary values. We connect these to real state in Step 6.
-  const planCount = 0;
-  const savedCount = 0;
+  const { plan, saved } = usePlanState();
+  const planCount = plan.length;
+  const savedCount = saved.length;
 
   return (
     <header className="border-b border-line">
