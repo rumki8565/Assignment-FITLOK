@@ -19,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
+        suppressHydrationWarning
         className={`${inter.variable} ${oswald.variable} flex min-h-screen flex-col bg-page font-sans text-white antialiased`}
       >
         <Navbar />
